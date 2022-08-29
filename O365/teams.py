@@ -257,10 +257,25 @@ class Chat(ApiComponent):
         created = cloud_data.get('createdDateTime')
         last_update = cloud_data.get('lastUpdatedDateTime')
         local_tz = self.protocol.timezone
-        self.created_date = parse(created).astimezone(
-            local_tz) if created else None
-        self.last_update_date = parse(last_update).astimezone(
-            local_tz) if last_update else None
+        if created:
+            try:
+                self.created_date=parse(created).astimezone(local_tz)
+            except OverflowError:
+                created = None
+        else:
+            created = None
+            
+        if last_update:
+            try:
+                self.last_update_date=parse(last_update).astimezone(local_tz)
+            except OverflowError:
+                last_update = None
+        else:
+            last_update = None
+#         self.created_date = parse(created).astimezone(
+#             local_tz) if created else None
+#         self.last_update_date = parse(last_update).astimezone(
+#             local_tz) if last_update else None
 
     def get_messages(self, limit=None, batch=None):
         """ Returns a list of chat messages from the chat
